@@ -1,17 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stock Price Viewer</title>
-  <link rel="stylesheet" href="styles/stylesheet.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StockSim Dashboard</title>
+  <link rel="stylesheet" href="styles/stylesheet.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h1>Live Stock Price</h1>
-  <input type="text" id="symbolInput" placeholder="Enter Stock Symbol (e.g. AAPL)">
-  <button id="loadBtn">Load Data</button>
-  <canvas id="stockChart"></canvas>
+  <!-- HEADER -->
+  <header>
+    <h1 class="logo">StockSim</h1>
+    <button class="crypto-btn">Crypto</button>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <!-- LEFT COLUMN -->
+    <div class="column left-column">
+      <h2>Overview</h2>
+      <div class="rounded-box overview-box">
+        <p>Account Value: $100,000</p>
+        <p>Cash: $50,000</p>
+        <p>Annual Return: 12%</p>
+        <button class="trade-btn">Trade</button>
+      </div>
+
+      <h2>Holdings</h2>
+      <div class="rounded-box holdings-box">
+        <table>
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Current Price</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody id="holdings-table">
+            <!-- Placeholder rows from JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Pending Trades</h2>
+      <div class="rounded-box pending-box">
+        <ul id="pending-trades-list">
+          <!-- Placeholder list items from JS -->
+        </ul>
+      </div>
+    </div>
+
+    <!-- MIDDLE COLUMN -->
+    <div class="column middle-column">
+      <h2>Account Value</h2>
+      <div class="rounded-box graph-box">
+        <canvas id="accountValueChart"></canvas>
+      </div>
+
+      <h2>Stock Value</h2>
+      <div class="rounded-box graph-box">
+        <canvas id="stockValueChart"></canvas>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="column right-column">
+      <h2>Live Market Overview</h2>
+      <div class="rounded-box market-box">
+        <table>
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Price</th>
+              <th>Change</th>
+              <th>Rating</th>
+            </tr>
+          </thead>
+          <tbody id="market-table">
+            <!-- Placeholder rows from JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
 
   <script src="scripts/api.js"></script>
 </body>
