@@ -15,9 +15,13 @@ Heute habe ich Chess multiplayer mit Alex versucht zu implementiere. Wir sind je
 
 
 31.10.
-- [ ] Arbeitspaket 1: Erstellen Sie mehrere Skizzen von Ihrem front end. Überlegen Sie sich auch, welche Elemente die Interaktion mit dem back end auslösen und wie sich die Oberfläche dadurch verändert. Bauen Sie auch Interaktionen ein, die keinen Aufruf der API benötigen, sondern sich im client bearbeiten lassen (sortieren, suchen etc.)
-- [ ] Arbeitspaket 2: Setzen Sie in HTML und CSS Ihren Entwurf auf rudimentäre Weise um.
-- [ ] Arbeitspaket 3: Schreiben Sie ersten JS-Code als proof of concept (bspw. Meldung bei Klick auf Knopf-Element)
-✍️ Heute habe ich... (50-100 Wörter)
+- [x] HTML CSS Header gleich wie bei Vincent
+- [x] HTML: Bildschirm in drittel aufteilen, links Portfolioübersicht, mittel Graphen, rechts Übersicht populäre Aktien
 
-☝️ Vergessen Sie nicht, Ihren Code auf github hochzuladen
+Heute habe ich das Proof of Concept erstellt, es war nur ein simples Textbox wo man ein Stock-Symbol eingeben kann, und dann ein simpler Graph.
+Ich ahbe festgestellt, dass finnhub nicht zuverlässig Daten sendet, also bin ich auf TwelveData umgestiegen, was schon gut funktioniert. Danach habe ich gemäss Skizze das Layout gemacht, mit statisches fake data, da ich noch herausfinden muss wie man alle Sachen aus dem API response holt und welche Rechnungen gemacht werden müssen
+
+07.11.
+- [ ] Alle Daten dynamisch gemäss API (im JS die placeholder Daten ersetzen und mit API return)
+- [ ] Buttons interaktiv machen (highlights, events schon registrieren, nicht unbedingt dass sie etwas machen)
+- [ ] Kontostandrechnung (wenn ich Stock kaufe für 100 dann Rechnung minus 100)
