@@ -24,7 +24,6 @@ Ich ahbe festgestellt, dass finnhub nicht zuverlässig Daten sendet, also bin ic
 07.11.
 - [x] Portfolio Kontostand rechnungs Funktion (acc value, cash, annual return)
 - [x] Funktionen, um die Daten dynamisch anzuzeigen
-- [ ] 
 
 # Zusammenfassung 01.11.2025
 Heute habe ich fast alle Funktionen erstellt, die nötig sind um die portfolio-Seite von sachen zu haben. Das heisst: Variablen für Kontostand, Verfügbares Geld, Gewinnrate, funktionen um das alles zu berechnen, und Funktionen um die Variablen zu erstellen, die nacher als Listen angezeigt werden. Auch habe ich die Funktionen gemacht um diese anzuzeigen.
