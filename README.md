@@ -32,4 +32,5 @@ Heute habe ich fast alle Funktionen erstellt, die nötig sind um die portfolio-S
 - [ ] Funktion OpenTradeDialog: dieses muss mit HTML verschiedene Trade optionen grafisch darstellen, und dann all die ausgewählte Informationen als formattierte string speichern.
 - [ ] Funktion: LogTradeHistory: dieses muss die Veränderungen im Portfolio im oberen Graph darstellen. Es muss die Veränderung von Tag zu Tag aufnehmen
 - [ ] Funktion RenderStock: sobald aus irgend eine Liste (egal welches im UI) ein Stock ausgewählt wird muss diese im unteren Graph angezeigt werden
+Ich habe falsch eingeschätzt, was genau nötig wäre. Am wichtigsten ist es jetzt die Account history irgendwie zu speichern, damit forschritt auch angezeigt werden kann.
 
