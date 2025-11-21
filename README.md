@@ -43,9 +43,15 @@ Heute habe ich fast nur an portfolio.js gearbeitet, und dabei viele neue Funktio
 
 
 21.11.2025
-- [ ] Funktion OpenTradeDialog: dieses muss mit HTML verschiedene Trade optionen grafisch darstellen, und dann all die ausgewählte Informationen als formattierte string
-- [ ] Funktion RenderStock: sobald aus irgend eine Liste (egal welches im UI) ein Stock ausgewählt wird muss diese im unteren Graph angezeigt werden
-- [ ] API.js: populateStockOverview(), es sollte mit API Daten der Overview ganz rechts füllen.
-- [ ] Integration von mehrere JS Dateien (Portfolio.js macht nur alles portfolio related, es macht keine Stock API calls, das wird durch API.js gemacht)
+- [x] Funktion OpenTradeDialog: dieses muss mit HTML verschiedene Trade optionen grafisch darstellen, und dann all die ausgewählte Informationen als formattierte string
+- [x] Funktion RenderStock: sobald aus irgend eine Liste (egal welches im UI) ein Stock ausgewählt wird muss diese im unteren Graph angezeigt werden
+- [x] API.js: populateStockOverview(), es sollte mit API Daten der Overview ganz rechts füllen.
+- [x] Integration von mehrere JS Dateien (Portfolio.js macht nur alles portfolio related, es macht keine Stock API calls, das wird durch API.js gemacht)
 
+Heute habe ich das OpenTradeDIalog erstellt und ui.js ausgebreitet. Auch konnte ich die Local Storage und Portfolio Graph testen, welche gut funktionieren. Ich habe jetzt semi funktionierendes JS für das Live Market Overview, da mein API key Probleme hat (es gibt manchmal 403/401 obwohl beides Form und limit rochtig sind)
 
+28.11.2025
+- [ ]  StonkSim UI gleich bei beides Vincent und mir
+- [ ]  Integration der JS Dateien (in UI.js wird eine Funktion von portfolio.js abgerufen, das funktioniert jetzt nicht)
+- [ ]  Testen von Buy/Sell aktionen (wird Betrag vom Konto abgeschrieben?)
+- [ ]  Button "Crypto" mit Crypto Seite verlinken
