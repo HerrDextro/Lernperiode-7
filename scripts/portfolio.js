@@ -2,8 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-let accountValue = 100000;
-let cashBalance = 100000;
+let accountValue = 110000;
+let cashBalance = 110000;
 let annualReturn = 0;
 const holdings = [];
 const pendingTrades = [];
@@ -53,7 +53,7 @@ function calculateAnnualReturn() {
 }
 
 function requestTrade(trade) {
-    const [action, amount, symbol, , price] = trade.split(" ");
+    const [action, symbol, amount, , price] = trade.split(" ");
     const amt = parseInt(amount);
     const prc = parseFloat(price.slice(1));
     if (action === "Buy") {

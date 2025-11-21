@@ -81,6 +81,34 @@
     </div>
   </main>
 
+  <!--trade popup thing-->
+  <!--function requestTrade(trade) {
+    const [action, symbol, amount, , price] = trade.split(" ");-->
+  <dialog id="trade-popup">
+  <div class="popup-content">
+    <span class="close-btn" id="close-popup">&times;</span>
+    <h2>Trade Stocks</h2>
+    <form id="trade-form">
+      <label for="trade-type">Trade Type:</label>
+      <select id="trade-type" name="trade-type" required>
+        <option value="buy">Buy</option>
+        <option value="sell">Sell</option>
+      </select>
+
+      <label for="stock-symbol">Stock Symbol:</label>
+      <input type="text" id="stock-symbol" name="stock-symbol" required>
+
+      <label for="quantity">Quantity:</label>
+      <input type="number" id="quantity" name="quantity" min="1" required>
+
+      <button type="submit">Submit Trade</button>
+    </form>
+  </div>
+</dialog>
+
+
   <script src="scripts/portfolio.js"></script>
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/api.js"></script>
 </body>
 </html>
