@@ -7,7 +7,7 @@ const marketStocks = [
   "LMT","RTX","BA","IBM","INTC"
 ];
 
-const apiKey = "16db685a81d747498056dca116082292".trim(); // TwelveData API key
+const apiKey = "".trim(); // TwelveData API key
 const marketTable = document.getElementById("market-table");
 const stockChartCtx = document.getElementById("stockValueChart").getContext("2d");
 let chartInstance;
