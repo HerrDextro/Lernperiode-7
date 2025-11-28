@@ -1,171 +1,197 @@
-document.addEventListener("DOMContentLoaded", () => {
+// Global State - Exposed to other scripts
+var accountValue = 110000;
+var cashBalance = 110000;
+var annualReturn = 0;
+var holdings = [];
+var pendingTrades = []; // Store objects now, not strings
+var currentMarketData = {}; // Filled by api.js
+const STARTING_VALUE = 100000;
+const TRADE_DELAY = 10 * 1000; // Testing: 10 seconds. Change back to 10 * 60 * 1000 for 10 min
 
 
-
-let accountValue = 110000;
-let cashBalance = 110000;
-let annualReturn = 0;
-const holdings = [];
-const pendingTrades = [];
-const portfolio = document.getElementById("portfolio-overview");
-const accountValueChart = document.getElementById("accountValueChart").getContext("2d");
-/*const stockValueChart = document.getElementById("stockValueChart").getContext("stockValueChart");*/
-const timestamp = Date.now();
-const tradeDelay = 10 * 60 * 1000; // 10 minutes in milliseconds
-
-
-
-
-
-//we need:
-//account value calculated from holdings + cash
-//cash balance
-//annual return calculated from starting value and current account value
-//function that updates pendingtrades from actions undertaken by trade action
-//function thaz completes the trade (with like 10 min delay) and updates holdings and cash balance
-//function that moves pending trades to holdings when executed
-//function that handles the trade interface inputs ->not done!
-saveDailyAccountValue();
-setInterval(saveDailyAccountValue, 1000 * 60 * 60); // autosave every hour
-
-renderPortfolio();
-PopulateAccountValueChart();
-
-
-function renderPortfolio() {
-    //fist overwiew
-    renderOverview();
-    //then holdings
-    PopulateHoldingsTable();
-    //then pending trades
-    PopulatePendingTrades();
-    //then account value chart
-    PopulateAccountValueChart();
-}
 
 function calculateAccountValue() {
     let holdingsValue = holdings.reduce((total, item) => total + (item.price * item.amount), 0);
     return cashBalance + holdingsValue;
 }
+
 function calculateAnnualReturn() {
-    let startingValue = 100000; // assuming starting value is 100,000
-    return ((accountValue - startingValue) / startingValue) * 100;
+    return ((accountValue - STARTING_VALUE) / STARTING_VALUE) * 100;
 }
 
-function requestTrade(trade) {
-    const [action, symbol, amount, , price] = trade.split(" ");
+// Trade logic below
+function requestTrade(action, symbol, amount) {
     const amt = parseInt(amount);
-    const prc = parseFloat(price.slice(1));
-    if (action === "Buy") {
-        const cost = amt * prc;
+    if (isNaN(amt) || amt <= 0) {
+        alert("Please enter a valid amount.");
+        return false;
+    }
+    
+    // requires api to run first
+    const currentPrice = currentMarketData[symbol] ? currentMarketData[symbol].price : null;
+
+    if (!currentPrice) {
+        alert(`Could not find current price for ${symbol}. Please check market table.`);
+        return false;
+    }
+
+    const trade = {
+        action: action,
+        symbol: symbol,
+        amount: amt,
+        price: currentPrice,
+        requestTime: Date.now(),
+        executeTime: Date.now() + TRADE_DELAY,
+        status: "Pending"
+    };
+
+    const cost = amt * currentPrice;
+
+    if (action === "buy") {
         if (cashBalance >= cost) {
             pendingTrades.push(trade);
-            executeTrades(trade, timestamp);
+            //NEW
+            setTimeout(processTradeQueue, TRADE_DELAY); 
+            renderPortfolio();
+            return true;
         } else {
-            alert("Insufficient cash balance!");
+            alert(`Insufficient cash balance. Needed: $${cost.toFixed(2)}`);
+            return false;
         }
-    } else if (action === "Sell") {
-        const existingHolding = holdings.find(h => h.symbol === symbol);    
+    } else if (action === "sell") {
+        const existingHolding = holdings.find(h => h.symbol === symbol); 
         if (existingHolding && existingHolding.amount >= amt) {
             pendingTrades.push(trade);
-            executeTrades(timestamp, trade);
+            // (fixed) New: Immediately process the queue
+            setTimeout(processTradeQueue, TRADE_DELAY);
+            renderPortfolio();
+            return true;
         } else {
-            alert("Insufficient holdings to sell!");
+            alert(`Insufficient holdings. You only own ${existingHolding ? existingHolding.amount : 0} of ${symbol}.`);
+            return false;
         }
     }
+    return false;
 }
 
-function executeTrades(requestTime, trade) {
-    pendingTrades.forEach(trade => {
-        setTimeout(() => {
-            const [action, amount, symbol, , price] = trade.split(" ");
-            const amt = parseInt(amount);
-            const prc = parseFloat(price.slice(1));
-            if (action === "Buy") {
-                cashBalance -= amt * prc;
-                const existingHolding = holdings.find(h => h.symbol === symbol);
-                if (existingHolding) {
-                    existingHolding.amount += amt;
-                    existingHolding.price = prc; // update to latest price
-                } else {
-                    holdings.push({ symbol: symbol, price: prc, amount: amt });
-                }
-            } else if (action === "Sell") {
-                cashBalance += amt * prc;
-                const existingHolding = holdings.find(h => h.symbol === symbol);
-                if (existingHolding) {
-                    existingHolding.amount -= amt;  
-                    if (existingHolding.amount === 0) {
-                        holdings.splice(holdings.indexOf(existingHolding), 1);
-                    }
+// NEW
+function processTradeQueue() {
+    const now = Date.now();
+    const tradesToExecute = pendingTrades.filter(t => t.executeTime <= now && t.status === "Pending");
+    
+    tradesToExecute.forEach(trade => {
+        const { action, symbol, amount, price } = trade;
+
+        if (action === "buy") {
+            cashBalance -= amount * price;
+            const existingHolding = holdings.find(h => h.symbol === symbol);
+            if (existingHolding) {
+                existingHolding.amount += amount;
+                // Don't update price here, use average cost basis in real life, but for now just leave it. Gemini said
+            } else {
+                holdings.push({ symbol: symbol, price: price, amount: amount });
+            }
+        } else if (action === "sell") {
+            cashBalance += amount * price;
+            const existingHolding = holdings.find(h => h.symbol === symbol);
+            if (existingHolding) {
+                existingHolding.amount -= amount;  
+                if (existingHolding.amount === 0) {
+                    holdings.splice(holdings.indexOf(existingHolding), 1);
                 }
             }
-            // Remove trade from pendingTrades
-            const index = pendingTrades.indexOf(trade);
-            if (index > -1) {
-                pendingTrades.splice(index, 1);
-            }
-            // Recalculate account value and annual return
-            accountValue = calculateAccountValue();
-            annualReturn = calculateAnnualReturn();
-        }, tradeDelay);
+        }
+        trade.status = "Executed"; 
     });
+
+
+    pendingTrades = pendingTrades.filter(t => t.status !== "Executed");
+    
+    accountValue = calculateAccountValue();
+    annualReturn = calculateAnnualReturn();
+    renderPortfolio();
+}
+
+// Rendering
+function renderPortfolio() {
+    renderOverview();
+    PopulateHoldingsTable();
+    PopulatePendingTrades();
+    // PopulateAccountValueChart(); // Only call this on DOMContentLoaded or when neede to recreate chart
 }
 
 function renderOverview() {
     accountValue = calculateAccountValue();
     annualReturn = calculateAnnualReturn();
-    // Update overview box
-    const overview = portfolio.querySelector(".overview-box"); //seems to remove the other boxes in the column
-    overview.innerHTML = `
-    <p>Account Value: $${accountValue.toFixed(2)}</p>
-    <p>Cash: $${cashBalance.toFixed(2)}</p>
-    <p>Annual Return: ${annualReturn.toFixed(2)}%</p>
-`;
+    const overview = document.querySelector("#portfolio-overview .overview-box"); 
+    if (overview) {
+        overview.innerHTML = `
+            <p>Account Value: $${accountValue.toFixed(2)}</p>
+            <p>Cash: $${cashBalance.toFixed(2)}</p>
+            <p class="annual-return ${annualReturn >= 0 ? 'positive' : 'negative'}">
+                Annual Return: ${annualReturn.toFixed(2)}%
+            </p>
+        `;
+    }
 }
 
 
 function PopulateHoldingsTable() {
-    const holdingsTable = document.querySelector(".holdings-box");
-if (!holdingsTable) return;
-if (holdings.length === 0) {
-    holdingsTable.innerHTML = "<tr><td>No holdings available</td></tr>";
-    return;
-}
+    const holdingsBody = document.getElementById("holdings-table");
+    if (!holdingsBody) return;
+    
+    holdingsBody.innerHTML = ""; // Clear existing rows
 
+    if (holdings.length === 0) {
+        holdingsBody.innerHTML = '<tr><td colspan="3">No holdings available</td></tr>';
+        return;
+    }
+
+    holdings.forEach(item => {
+        const row = document.createElement("tr");
+        const marketPrice = currentMarketData[item.symbol] ? currentMarketData[item.symbol].price : item.price;
+        const value = item.amount * marketPrice;
+
+        row.innerHTML = `
+            <td>${item.symbol}</td>
+            <td>$${marketPrice.toFixed(2)}</td>
+            <td>${item.amount}</td>
+        `;
+        // IMPROVEMENT: Added total value
+        // row.innerHTML += `<td>$${value.toFixed(2)}</td>`; 
+        holdingsBody.appendChild(row);
+    });
 }
 
 function PopulatePendingTrades() {
-// Populate Pending Trades
-const pendingTradesList = document.querySelector(".pending-box");
-if (pendingTrades.length === 0) {
-    pendingTradesList.innerHTML = "<tr><td>No pending trades</td></tr>";
-}
-pendingTrades.forEach(trade => {
-    const li = document.createElement("li");
-    li.textContent = trade;
-    pendingTradesList.appendChild(li);
-});
+    const pendingTradesList = document.getElementById("pending-trades-list");
+    if (!pendingTradesList) return;
+    
+    pendingTradesList.innerHTML = ""; // Clear existing items
+
+    if (pendingTrades.length === 0) {
+        pendingTradesList.innerHTML = '<li>No pending trades</li>';
+        return;
+    }
+    
+    pendingTrades.forEach(trade => {
+        const li = document.createElement("li");
+        const remainingTime = Math.max(0, trade.executeTime - Date.now());
+        const remainingSeconds = Math.ceil(remainingTime / 1000);
+        
+        li.textContent = `${trade.action.toUpperCase()} ${trade.amount} of ${trade.symbol} @ $${trade.price.toFixed(2)} (Execute in ${remainingSeconds}s)`;
+        pendingTradesList.appendChild(li);
+    });
 }
 
-//from here on account value history and calculation for the chart
-//this one still needs some work (convert portfolio values to chart data)
-function saveDailyDataToStorage(date, accountValue) {
-    localStorage.setItem(date, accountValue);
-    localStorage.setItem("holdings", JSON.stringify(holdings));
-}
-function getValueHistory() {
-    return JSON.parse(localStorage.getItem("accountValues")) || [];
-}
-function getTradeHistory() {
-    return JSON.parse(localStorage.getItem("holdings")) || [];
-}
 
+// Local Storage logic plus history chart
 function createAccountHistory() {
     const history = [];
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key !== "holdings") {
+        // Only look for keys that look like dates ("YYYY-MM-DD")
+        if (key && key.match(/^\d{4}-\d{2}-\d{2}$/)) { 
             const value = localStorage.getItem(key);
             history.push({ date: key, value: parseFloat(value) });
         }
@@ -174,16 +200,29 @@ function createAccountHistory() {
     history.sort((a,b) => new Date(a.date) - new Date(b.date));
     return history;
 }
- //should create an array of objects with date and value for the graph maker
+
+
+function saveDailyAccountValue() {
+    const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+    const currentAccountValue = calculateAccountValue();
+    
+    localStorage.setItem(today, currentAccountValue);
+}
 
 function PopulateAccountValueChart() {
     const history = createAccountHistory();
     if (history.length === 0) {
         console.log("No account value history available");
+        // IMPROVEMENT: Display an initialization message on the chart canvas
         return;
     }
     const ctx = document.getElementById('accountValueChart').getContext('2d');
-    const accountChart = new Chart(ctx, {
+    
+    if (window.accountChartInstance) {
+        window.accountChartInstance.destroy();
+    }
+    
+    window.accountChartInstance = new Chart(ctx, { 
         type: 'line',
         data: {
             labels: history.map(entry => entry.date),
@@ -197,19 +236,18 @@ function PopulateAccountValueChart() {
     });
 }
 
-//logic for saving daily data to local storage
-function saveDailyAccountValue() {
-    const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
-    const accountValue = calculateAccountValue();
+//gemini 
+// --- Initial Setup ---
+document.addEventListener("DOMContentLoaded", () => {
+    // Initial render and chart setup
+    renderPortfolio();
+    PopulateAccountValueChart();
     
-    if (!localStorage.getItem(today)) {
-        localStorage.setItem(today, accountValue);
-    }
-}
-
-
-
-
+    // Start hourly save timer
+    setInterval(saveDailyAccountValue, 1000 * 60 * 60); 
+    
+    // Improvement: Set up a timer to continuously check and process the queue
+    setInterval(processTradeQueue, 5000); // Check every 5 seconds
 });
 
 /*
