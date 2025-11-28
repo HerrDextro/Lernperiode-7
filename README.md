@@ -52,6 +52,15 @@ Heute habe ich das OpenTradeDIalog erstellt und ui.js ausgebreitet. Auch konnte 
 
 28.11.2025
 - [ ]  StonkSim UI gleich bei beides Vincent und mir
-- [ ]  Integration der JS Dateien (in UI.js wird eine Funktion von portfolio.js abgerufen, das funktioniert jetzt nicht)
-- [ ]  Testen von Buy/Sell aktionen (wird Betrag vom Konto abgeschrieben?)
+- [x]  Integration der JS Dateien mit js module (in UI.js wird eine Funktion von portfolio.js abgerufen, das funktioniert jetzt nicht)
+- [x]  Testen von Buy/Sell aktionen (wird Betrag vom Konto abgeschrieben?)
 - [ ]  Button "Crypto" mit Crypto Seite verlinken
+
+Heute habe ich die Live-Market-Overview auf der rechte Seite implementiert und getestet. Es hat noch ein paar bugs, wie ZB nach jede refresh/reload verschwinden die Daten, aber endlich zeigt es die Stocks an. Ich habe mich dagegen entschieden die andere Seite von Vincent zu implentieren, da seines ein Backend hat und meines noch nicht solide genug ist um es "fertig" zu nennen
+
+05.12.2025
+- [ ] Funktionalität: Stock Auswählen und dann im unteren Graph anzeigen
+- [ ] Logikfehler beim Live Market Overview fixen
+- [ ] Button "Crypto" mit Crypto Seite verlinken
+- [ ] StonkSim UI stil/Logo gleich bei beides Vincent und mir
+
